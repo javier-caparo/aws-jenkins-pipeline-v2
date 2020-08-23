@@ -1,4 +1,4 @@
-FROM node
+FROM node:stretch-slim
 
 RUN apt-get update && apt-get upgrade -y \
     && apt-get clean

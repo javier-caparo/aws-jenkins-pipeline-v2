@@ -3,8 +3,6 @@ pipeline {
 	agent {
     	docker {
 			image 'node:stretch-slim'
-			label 'my-defined-label'
-			args  '-v /tmp:/tmp'
     	}
 	}
 
@@ -13,7 +11,7 @@ pipeline {
 		registryCredential = 'dockerhub'
 		dockerImage = ''
     }
-	
+
 	stages {
 		
 		stage('Cloning Git') {
