@@ -3,8 +3,7 @@ pipeline {
 	agent  { node { label "node" } }
 
 	environment { 
-        env.AWS_ECR_LOGIN = true
-		registry = 'javiercaparo/aws-jenkins-pipeline-v2'
+        registry = 'javiercaparo/aws-jenkins-pipeline-v2'
 		registryCredential = 'dockerhub'
 		dockerImage = ''
     }
