@@ -2,12 +2,14 @@ pipeline {
 	
 	agent  { node { label "node" } }
 
-	node {
-
-		env.AWS_ECR_LOGIN=true
+	environment { 
+        env.AWS_ECR_LOGIN=true
+		registry = 'javiercaparo/aws-jenkins-pipeline-v2'
+		registryCredential = 'dockerhub'
+    }
+	stages {
+		
 		def newApp
-		def registry = 'javiercaparo/aws-jenkins-pipeline-v2'
-		def registryCredential = 'dockerhub'
 		
 		stage('Git') {
 			git 'https://github.com/jfcb853/aws-jenkins-pipeline-v2'
@@ -19,14 +21,14 @@ pipeline {
 			sh 'npm test'
 		}
 		stage('Building image') {
-			docker.withRegistry( 'https://' + registry, registryCredential ) {
-				def buildName = registry + ":$BUILD_NUMBER"
+			docker.withRegistry( 'https://' + $registry, $registryCredential ) {
+				def buildName = $registry + ":$BUILD_NUMBER"
 				newApp = docker.build buildName
 				newApp.push()
 			}
 		}
 		stage('Registring image') {
-			docker.withRegistry( 'https://' + registry, registryCredential ) {
+			docker.withRegistry( 'https://' + $registry, $registryCredential ) {
 				newApp.push 'latest2'
 			}
 		}
