@@ -17,7 +17,7 @@ pipeline {
 				git 'https://github.com/jfcb853/aws-jenkins-pipeline-v2'
 			}
 		}
-		stage('Buildind dependencies') {
+		stage('Building dependencies') {
 			steps{
 				sh 'npm install'
 			}
@@ -29,14 +29,14 @@ pipeline {
 			}
 			
 		}
-		stage('Building image') {
+		stage('Building docker image') {
 			steps{
         		script {
           			dockerImage = docker.build registry + ":$BUILD_NUMBER"
         		}
       		}
 		}
-		stage('Registring image') {
+		stage('Pushing image to dockerhub') {
 			steps{
         		script {
           			docker.withRegistry( '', registryCredential ) {
@@ -45,7 +45,7 @@ pipeline {
         		}
       		}
 		}
-		stage('Removing image') {
+		stage('Removing image locally') {
 			steps{
         		sh "docker rmi $registry:$BUILD_NUMBER"
       		}
