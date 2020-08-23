@@ -3,38 +3,50 @@ pipeline {
 	agent  { node { label "node" } }
 
 	environment { 
-        env.AWS_ECR_LOGIN=true
+        env.AWS_ECR_LOGIN = true
 		registry = 'javiercaparo/aws-jenkins-pipeline-v2'
 		registryCredential = 'dockerhub'
+		dockerImage = ''
     }
 	stages {
 		
-		def newApp
-		
-		stage('Git') {
-			git 'https://github.com/jfcb853/aws-jenkins-pipeline-v2'
+		stage('Cloning Git') {
+			steps {
+				git 'https://github.com/jfcb853/aws-jenkins-pipeline-v2'
+			}
 		}
-		stage('Build') {
-			sh 'npm install'
+		stage('Buildind dependencies') {
+			steps{
+				sh 'npm install'
+			}
+			
 		}
-		stage('Test') {
-			sh 'npm test'
+		stage('Testing - Unitary Tests') {
+			steps {
+				sh 'npm test'
+			}
+			
 		}
 		stage('Building image') {
-			docker.withRegistry( 'https://' + $registry, $registryCredential ) {
-				def buildName = $registry + ":$BUILD_NUMBER"
-				newApp = docker.build buildName
-				newApp.push()
-			}
+			steps{
+        		script {
+          			docker.build registry + ":$BUILD_NUMBER"
+        		}
+      		}
 		}
 		stage('Registring image') {
-			docker.withRegistry( 'https://' + $registry, $registryCredential ) {
-				newApp.push 'latest2'
-			}
+			steps{
+        		script {
+          			docker.withRegistry( '', registryCredential ) {
+            			dockerImage.push()
+          			}
+        		}
+      		}
 		}
 		stage('Removing image') {
-			sh "docker rmi $registry:$BUILD_NUMBER"
-			sh "docker rmi $registry:latest"
+			steps{
+        		sh "docker rmi $registry:$BUILD_NUMBER"
+      		}
 		}
 		
 	}
