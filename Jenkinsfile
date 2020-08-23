@@ -1,6 +1,11 @@
 pipeline {
 	
-	agent any
+	agent {
+    docker {
+        image 'node:stretch-slim'
+        label 'my-defined-label'
+        args  '-v /tmp:/tmp'
+    }
 
 	environment { 
         registry = 'javiercaparo/aws-jenkins-pipeline-v2'
