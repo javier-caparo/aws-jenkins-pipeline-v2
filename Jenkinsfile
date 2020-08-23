@@ -1,6 +1,6 @@
 pipeline {
 	
-	agent  { node { label "node" } }
+	agent any
 
 	environment { 
         registry = 'javiercaparo/aws-jenkins-pipeline-v2'
