@@ -1,10 +1,6 @@
 pipeline {
 	
-	agent {
-    	docker {
-			image 'node:stretch-slim'
-    	}
-	}
+	agent any
 
 	environment { 
         registry = 'javiercaparo/aws-jenkins-pipeline-v2'
@@ -34,7 +30,7 @@ pipeline {
 		stage('Building image') {
 			steps{
         		script {
-          			docker.build registry + ":$BUILD_NUMBER"
+          			dockerImage = docker.build registry + ":$BUILD_NUMBER"
         		}
       		}
 		}
