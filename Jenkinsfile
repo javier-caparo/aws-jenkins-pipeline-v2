@@ -1,17 +1,19 @@
 pipeline {
 	
 	agent {
-    docker {
-        image 'node:stretch-slim'
-        label 'my-defined-label'
-        args  '-v /tmp:/tmp'
-    }
+    	docker {
+			image 'node:stretch-slim'
+			label 'my-defined-label'
+			args  '-v /tmp:/tmp'
+    	}
+	}
 
 	environment { 
         registry = 'javiercaparo/aws-jenkins-pipeline-v2'
 		registryCredential = 'dockerhub'
 		dockerImage = ''
     }
+	
 	stages {
 		
 		stage('Cloning Git') {
