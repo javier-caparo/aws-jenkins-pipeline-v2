@@ -1,6 +1,8 @@
 pipeline {
 	
-	agent any
+	agent { label 'master' }
+
+  	tools { nodejs "nodejs" }
 
 	environment { 
         registry = 'javiercaparo/aws-jenkins-pipeline-v2'
