@@ -23,11 +23,19 @@ pipeline {
 			}
 			
 		}
-		stage('Testing - Unitary Tests') {
-			steps {
-				sh 'npm test'
+		stage('Run Tests') {
+			parallel {
+				stage('Mocha Unitary Tests') {
+					steps {
+						sh 'npm test'
+					}
+				}
+				stage('Lint Tests eslint') {
+					steps {
+						sh 'npm run lint'
+					}
+				}
 			}
-			
 		}
 		stage('Building docker image') {
 			steps{
