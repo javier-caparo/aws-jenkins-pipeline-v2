@@ -1,5 +1,5 @@
 'use strict';
-const helpers = require('handlebars-helpers')();
+//const helpers = require('handlebars-helpers')();
 var server = require('express')();
 
 require('./config/security')(server);

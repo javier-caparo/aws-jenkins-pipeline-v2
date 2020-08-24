@@ -1,4 +1,5 @@
 'use strict';
+
 const title_default = 'Simple Node.js With Mustache example'
 	, TodoApi = require('../api/TodoApi')
 

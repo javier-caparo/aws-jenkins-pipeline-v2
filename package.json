@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node ./src/server.js",
     "dev": "nodemon ./src/server.js",
-    "test": "mocha -R spec src/**/*.spec.js"
+    "test": "mocha -R spec src/**/*.spec.js",
+    "lint": "npx eslint ./src/server.js ./src/api/TodoApi.js ./src/api/TodoRequestOptions.js"
   },
   "keywords": [
     "node.js",
@@ -27,6 +28,7 @@
     "request": "^2.88.0"
   },
   "devDependencies": {
+    "eslint": "^7.7.0",
     "mocha": "^5.2.0",
     "nock": "^10.0.4",
     "nodemon": "^1.18.9"
