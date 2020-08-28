@@ -1,0 +1,29 @@
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+metadata:
+  name: eks-dev
+  region: us-west-2
+  version: "1.17"
+nodeGroups:
+  - name: worker-nodes
+    instanceType: t3.medium
+    desiredCapacity: 2
+    privateNetworking: true
+vpc:
+  id: "vpc-0352965d74cd929cd"
+  subnets:
+    public:
+      us-west-2a:
+        id: "subnet-06860d987be9e0aab"
+      us-west-2b:
+        id: "subnet-0928af056e4856aec"
+    private:
+      us-west-2a:
+        id: "subnet-0f46a3ed82476e333"
+      us-west-2b:
+        id: "subnet-00c757382f0185be0"
+  nat:
+    gateway: Disable
+cloudWatch:
+  clusterLogging:
+    enableTypes: ["*"]

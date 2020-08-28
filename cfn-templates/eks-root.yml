@@ -1,0 +1,156 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: AWS CloudFormation stack for Kubernetes cluster
+Parameters:
+  VPCCIDRBlock:
+    Description: VPC CidrBlock
+    Type: String
+    Default: 10.0.0.0/16
+  EKSClusterName:
+    Description: EKS cluster name
+    Type: String
+Mappings:
+  AZSubNets:
+    public:
+      zoneA: 0.0/20
+      zoneB: 16.0/20
+    private:
+      zoneA: 32.0/20
+      zoneB: 48.0/20
+Resources:
+  RegionNetworkStack:
+    Type: 'AWS::CloudFormation::Stack'
+    Properties:
+      TemplateURL: eks-region-networking.json
+      Parameters:
+        VPCCIDRBlock: !Ref VPCCIDRBlock
+        EKSClusterName: !Ref EKSClusterName
+  AZNetworkStackA:
+    Type: 'AWS::CloudFormation::Stack'
+    Properties:
+      TemplateURL: eks-azs-networking.json
+      Parameters:
+        VPCID: !GetAtt 
+          - RegionNetworkStack
+          - Outputs.VPCID
+        AZ: !Select 
+          - '0'
+          - !GetAZs ''
+        IGWID: !GetAtt 
+          - RegionNetworkStack
+          - Outputs.IGWID
+        EKSClusterName: !Ref EKSClusterName
+        PublicSubnetCIDR: !Join 
+          - .
+          - - !Select 
+              - '0'
+              - !Split 
+                - .
+                - !Ref VPCCIDRBlock
+            - !Select 
+              - '1'
+              - !Split 
+                - .
+                - !Ref VPCCIDRBlock
+            - !FindInMap 
+              - AZSubNets
+              - public
+              - zoneA
+        PrivateSubnetCIDR: !Join 
+          - .
+          - - !Select 
+              - '0'
+              - !Split 
+                - .
+                - !Ref VPCCIDRBlock
+            - !Select 
+              - '1'
+              - !Split 
+                - .
+                - !Ref VPCCIDRBlock
+            - !FindInMap 
+              - AZSubNets
+              - private
+              - zoneA
+  AZNetworkStackB:
+    Type: 'AWS::CloudFormation::Stack'
+    Properties:
+      TemplateURL: eks-azs-networking.json
+      Parameters:
+        VPCID: !GetAtt 
+          - RegionNetworkStack
+          - Outputs.VPCID
+        AZ: !Select 
+          - '1'
+          - !GetAZs ''
+        IGWID: !GetAtt 
+          - RegionNetworkStack
+          - Outputs.IGWID
+        EKSClusterName: !Ref EKSClusterName
+        PublicSubnetCIDR: !Join 
+          - .
+          - - !Select 
+              - '0'
+              - !Split 
+                - .
+                - !Ref VPCCIDRBlock
+            - !Select 
+              - '1'
+              - !Split 
+                - .
+                - !Ref VPCCIDRBlock
+            - !FindInMap 
+              - AZSubNets
+              - public
+              - zoneB
+        PrivateSubnetCIDR: !Join 
+          - .
+          - - !Select 
+              - '0'
+              - !Split 
+                - .
+                - !Ref VPCCIDRBlock
+            - !Select 
+              - '1'
+              - !Split 
+                - .
+                - !Ref VPCCIDRBlock
+            - !FindInMap 
+              - AZSubNets
+              - private
+              - zoneB
+Outputs:
+  VPCID:
+    Description: EKS VPC ID
+    Value: !GetAtt 
+      - RegionNetworkStack
+      - Outputs.VPCID
+  AStackAZ:
+    Description: Stack location
+    Value: !GetAtt 
+      - AZNetworkStackA
+      - Outputs.StackAZ
+  APublicSubnetID:
+    Description: PublicSubnet ID
+    Value: !GetAtt 
+      - AZNetworkStackA
+      - Outputs.PublicSubnetID
+  APrivateSubnetID:
+    Description: PrivateSubnet ID
+    Value: !GetAtt 
+      - AZNetworkStackA
+      - Outputs.PrivateSubnetID
+  BStackAZ:
+    Description: Stack location
+    Value: !GetAtt 
+      - AZNetworkStackB
+      - Outputs.StackAZ
+  BPublicSubnetID:
+    Description: PublicSubnet ID
+    Value: !GetAtt 
+      - AZNetworkStackB
+      - Outputs.PublicSubnetID
+  BPrivateSubnetID:
+    Description: PrivateSubnet ID
+    Value: !GetAtt 
+      - AZNetworkStackB
+      - Outputs.PrivateSubnetID
